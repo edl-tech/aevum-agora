@@ -8,6 +8,8 @@ import type { User } from '@supabase/supabase-js'
 import { Bell, LogIn, LogOut, Search } from 'lucide-react'
 import clsx from 'clsx'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || ''
+
 export function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -58,7 +60,7 @@ export function Navbar() {
               </button>
             </>
           ) : (
-            <Link href="/login" className="btn h-9 px-3 text-sm">
+            <Link href={siteUrl ? `/login?redirectTo=${encodeURIComponent(siteUrl)}` : '/login'} className="btn h-9 px-3 text-sm">
               <LogIn className="h-4 w-4 mr-2" /> Login
             </Link>
           )}

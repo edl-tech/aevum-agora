@@ -1,7 +1,7 @@
 'use client'
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function LoginPage() {
   const supabase = createClientComponentClient()
@@ -10,10 +10,15 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const redirectTo = useMemo(() => {
+    if (typeof window !== 'undefined') return window.location.origin
+    return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  }, [])
+
   async function signInWithProvider(provider: 'github' | 'google') {
     setError(null)
     setLoading(true)
-    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}` } })
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } })
     setLoading(false)
     if (error) setError(error.message)
   }
@@ -22,7 +27,7 @@ export default function LoginPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${location.origin}` } })
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } })
     setLoading(false)
     if (error) setError(error.message)
     else setSent(true)
